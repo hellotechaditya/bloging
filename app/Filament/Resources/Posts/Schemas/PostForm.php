@@ -6,6 +6,9 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class PostForm
@@ -14,24 +17,37 @@ class PostForm
     {
         return $schema
             ->components([
-                TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
+                Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->required(),
+                Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->required(),
                 TextInput::make('title')
                     ->required(),
                 TextInput::make('slug')
-                    ->required(),
-                Textarea::make('content')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->helperText('Auto-generated from title.'),
+                RichEditor::make('content')
                     ->required()
                     ->columnSpanFull(),
-                TextInput::make('thumbnail'),
+                FileUpload::make('thumbnail')
+                    ->image()
+                    ->directory('thumbnails'),
+                Select::make('tags')
+                    ->relationship('tags', 'name')
+                    ->multiple()
+                    ->preload(),
                 TextInput::make('meta_title'),
                 Textarea::make('meta_description')
                     ->columnSpanFull(),
-                TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'scheduled' => 'Scheduled'
+                    ])
                     ->required()
                     ->default('draft'),
                 DateTimePicker::make('published_at'),
