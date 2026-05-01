@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\Comments\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -15,12 +16,18 @@ class CommentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('post_id')
+                TextColumn::make('post.title')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('user_id')
+                TextColumn::make('user.name')
+                    ->label('Author')
+                    ->searchable()
                     ->sortable(),
+                TextColumn::make('body')
+                    ->limit(50),
                 IconColumn::make('is_approved')
-                    ->boolean(),
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -31,21 +38,17 @@ class CommentsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\TernaryFilter::make('is_approved'),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    \Filament\Actions\BulkAction::make('delete')
-                        ->label('Delete Selected')
-                        ->icon('heroicon-o-trash')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->delete())
-                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 }
+

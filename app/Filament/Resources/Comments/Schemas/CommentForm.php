@@ -2,23 +2,27 @@
 
 namespace App\Filament\Resources\Comments\Schemas;
 
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Schema;
+use Filament\Forms\Form;
 
 class CommentForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Form $form): Form
     {
-        return $schema
-            ->components([
-                TextInput::make('post_id')
+        return $form
+            ->schema([
+                Select::make('post_id')
+                    ->relationship('post', 'title')
                     ->required()
-                    ->numeric(),
-                TextInput::make('user_id')
+                    ->searchable()
+                    ->preload(),
+                Select::make('user_id')
+                    ->relationship('user', 'name')
                     ->required()
-                    ->numeric(),
+                    ->searchable()
+                    ->preload(),
                 Textarea::make('body')
                     ->required()
                     ->columnSpanFull(),
@@ -27,3 +31,4 @@ class CommentForm
             ]);
     }
 }
+

@@ -9,14 +9,15 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\FileUpload;
-use Filament\Schemas\Schema;
+use Filament\Forms\Form;
+use App\Models\Post;
 
 class PostForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Form $form): Form
     {
-        return $schema
-            ->components([
+        return $form
+            ->schema([
                 \Filament\Forms\Components\Section::make('Article Content')
                     ->description('Main content and visual assets of your post.')
                     ->schema([
@@ -119,3 +120,4 @@ class PostForm
             ->columns(3);
     }
 }
+

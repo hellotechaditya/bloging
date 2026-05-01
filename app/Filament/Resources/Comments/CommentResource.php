@@ -8,21 +8,19 @@ use App\Filament\Resources\Comments\Pages\ListComments;
 use App\Filament\Resources\Comments\Schemas\CommentForm;
 use App\Filament\Resources\Comments\Tables\CommentsTable;
 use App\Models\Comment;
-use BackedEnum;
+use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
 class CommentResource extends Resource
 {
     protected static ?string $model = Comment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    public static function form(Schema $schema): Schema
+    public static function form(Form $form): Form
     {
-        return CommentForm::configure($schema);
+        return CommentForm::configure($form);
     }
 
     public static function table(Table $table): Table
@@ -46,3 +44,4 @@ class CommentResource extends Resource
         ];
     }
 }
+

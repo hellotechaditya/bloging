@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Posts\Tables;
 
 use App\Models\Post;
-use Filament\Actions\BulkAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -86,13 +86,7 @@ class PostsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    BulkAction::make('delete')
-                        ->label('Delete Selected')
-                        ->icon('heroicon-o-trash')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->delete())
-                        ->deselectRecordsAfterCompletion(),
+                    DeleteBulkAction::make(),
                     BulkAction::make('publish')
                         ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['status' => 'published']))
                         ->deselectRecordsAfterCompletion()
@@ -102,3 +96,4 @@ class PostsTable
             ]);
     }
 }
+
