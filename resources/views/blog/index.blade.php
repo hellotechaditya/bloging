@@ -8,10 +8,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             @php $mainFeatured = $featuredPosts->first(); @endphp
             <div class="relative group overflow-hidden rounded-2xl">
-                <img src="{{ $mainFeatured->thumbnail ?? 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1000' }}" 
-                     alt="{{ $mainFeatured->title }}" 
-                     class="w-full h-[500px] object-cover transition duration-500 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <a href="{{ route('blog.show', $mainFeatured->slug) }}" class="block">
+                    <img src="{{ $mainFeatured->thumbnail ?? 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1000' }}" 
+                         alt="{{ $mainFeatured->title }}" 
+                         class="w-full h-[500px] object-cover transition duration-500 group-hover:scale-105">
+                </a>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none"></div>
                 <div class="absolute bottom-0 p-8">
                     <span class="bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase mb-4 inline-block">Featured</span>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -28,9 +30,11 @@
             <div class="space-y-8">
                 @foreach($featuredPosts->skip(1) as $fPost)
                 <div class="flex gap-6 items-center">
-                    <img src="{{ $fPost->thumbnail ?? 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&q=80&w=300' }}" 
-                         alt="{{ $fPost->title }}" 
-                         class="w-32 h-32 rounded-xl object-cover">
+                    <a href="{{ route('blog.show', $fPost->slug) }}" class="flex-shrink-0">
+                        <img src="{{ $fPost->thumbnail ?? 'https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&q=80&w=300' }}" 
+                             alt="{{ $fPost->title }}" 
+                             class="w-32 h-32 rounded-xl object-cover hover:opacity-90 transition">
+                    </a>
                     <div>
                         <span class="text-primary-600 text-xs font-bold uppercase">{{ $fPost->category->name }}</span>
                         <h3 class="text-xl font-bold mt-2 mb-2">
@@ -65,9 +69,11 @@
                 @forelse($posts as $post)
                 <article class="flex flex-col md:flex-row gap-8 bg-white dark:bg-gray-950 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-xl transition-all duration-300">
                     <div class="md:w-1/3">
-                        <img src="{{ $post->thumbnail ?? 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=500' }}" 
-                             alt="{{ $post->title }}" 
-                             class="w-full h-48 object-cover rounded-xl">
+                        <a href="{{ route('blog.show', $post->slug) }}" class="block h-full">
+                            <img src="{{ $post->thumbnail ?? 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=500' }}" 
+                                 alt="{{ $post->title }}" 
+                                 class="w-full h-48 md:h-full object-cover rounded-xl hover:opacity-90 transition">
+                        </a>
                     </div>
                     <div class="md:w-2/3 flex flex-col justify-between">
                         <div>
@@ -118,7 +124,7 @@
                 </div>
 
                 <!-- Categories -->
-                <div class="bg-white dark:bg-gray-950 p-8 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <div id="categories" class="bg-white dark:bg-gray-950 p-8 rounded-2xl border border-gray-100 dark:border-gray-800">
                     <h3 class="font-bold text-lg mb-6">Categories</h3>
                     <div class="space-y-4">
                         @foreach($categories as $category)
@@ -134,9 +140,9 @@
                 <div class="bg-gradient-to-br from-primary-600 to-indigo-700 p-8 rounded-2xl text-white shadow-xl shadow-primary-500/20">
                     <h3 class="font-bold text-2xl mb-4">Stay Inspired</h3>
                     <p class="text-primary-100 mb-6 text-sm">Join 10,000+ readers and get the best tech insights delivered to your inbox.</p>
-                    <form action="#" class="space-y-4">
+                    <form action="javascript:void(0)" class="space-y-4" onsubmit="alert('Newsletter subscription functionality to be implemented!');">
                         <input type="email" placeholder="Your email address" class="w-full bg-white/10 border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:ring-2 focus:ring-white">
-                        <button class="w-full bg-white text-primary-600 font-bold py-3 rounded-xl hover:bg-primary-50 transition">Subscribe</button>
+                        <button type="submit" class="w-full bg-white text-primary-600 font-bold py-3 rounded-xl hover:bg-primary-50 transition">Subscribe</button>
                     </form>
                 </div>
             </aside>

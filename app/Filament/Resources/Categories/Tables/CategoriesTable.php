@@ -35,9 +35,15 @@ class CategoriesTable
             ->recordActions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    \Filament\Actions\BulkAction::make('delete')
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->delete())
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

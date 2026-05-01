@@ -16,10 +16,8 @@ class CommentsTable
         return $table
             ->columns([
                 TextColumn::make('post_id')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('user_id')
-                    ->numeric()
                     ->sortable(),
                 IconColumn::make('is_approved')
                     ->boolean(),
@@ -38,9 +36,15 @@ class CommentsTable
             ->recordActions([
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    \Filament\Actions\BulkAction::make('delete')
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->delete())
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

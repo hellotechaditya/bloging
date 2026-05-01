@@ -2,7 +2,10 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Models\Post;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -15,48 +18,86 @@ class PostsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+                \Filament\Tables\Columns\ImageColumn::make('thumbnail')
+                    ->circular()
+                    ->disk('public')
+                    ->placeholder('No Image'),
+
                 TextColumn::make('title')
+                    ->searchable()
+                    ->sortable()
+                    ->weight(\Filament\Support\Enums\FontWeight::Bold)
+                    ->description(fn (Post $record): string => \Illuminate\Support\Str::limit(strip_tags($record->content), 40)),
+
+                TextColumn::make('category.name')
+                    ->badge()
+                    ->color('info')
+                    ->sortable()
                     ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('thumbnail')
-                    ->searchable(),
-                TextColumn::make('meta_title')
-                    ->searchable(),
-                TextColumn::make('status')
-                    ->searchable(),
-                TextColumn::make('published_at')
-                    ->dateTime()
-                    ->sortable(),
-                IconColumn::make('is_featured')
-                    ->boolean(),
-                TextColumn::make('reading_time')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
+
+                TextColumn::make('user.name')
+                    ->label('Author')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'published' => 'success',
+                        'scheduled' => 'warning',
+                        default => 'gray',
+                    })
+                    ->searchable(),
+
+                \Filament\Tables\Columns\ToggleColumn::make('is_featured')
+                    ->label('Featured'),
+
+                TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->description(fn (Post $record): string => $record->published_at?->diffForHumans() ?? ''),
+
+                TextColumn::make('reading_time')
+                    ->suffix(' min')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'scheduled' => 'Scheduled',
+                    ]),
+                \Filament\Tables\Filters\SelectFilter::make('category')
+                    ->relationship('category', 'name'),
+                \Filament\Tables\Filters\TernaryFilter::make('is_featured')
+                    ->label('Featured Only'),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('delete')
+                        ->label('Delete Selected')
+                        ->icon('heroicon-o-trash')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->delete())
+                        ->deselectRecordsAfterCompletion(),
+                    BulkAction::make('publish')
+                        ->action(fn (\Illuminate\Database\Eloquent\Collection $records) => $records->each->update(['status' => 'published']))
+                        ->deselectRecordsAfterCompletion()
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle'),
                 ]),
             ]);
     }
